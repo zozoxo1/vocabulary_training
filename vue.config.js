@@ -1,8 +1,8 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
-  publicPath: '',
-  pluginOptions: {
-    cordovaPath: 'src-cordova'
-  },
-  transpileDependencies: []
+	pluginOptions: {
+		cordovaPath: 'src-cordova',
+	},
+	publicPath: process.env.PUBLIC_URL || '/',
+	transpileDependencies: ['vuetify'],
 })

@@ -1,0 +1,157 @@
+[
+	{
+		"code": "ae",
+		"language": "Arabisch",
+		"path": "flags/ae.svg"
+	},
+	{
+		"code": "ch",
+		"language": "Schweizer deutsch",
+		"path": "flags/ch.svg"
+	},
+	{
+		"code": "cn",
+		"language": "Chinesisch",
+		"path": "flags/cn.svg"
+	},
+	{
+		"code": "cz",
+		"language": "Tschechisch",
+		"path": "flags/cz.svg"
+	},
+	{
+		"code": "de",
+		"language": "Deutsch",
+		"path": "flags/de.svg"
+	},
+	{
+		"code": "dk",
+		"language": "Dänisch",
+		"path": "flags/dk.svg"
+	},
+	{
+		"code": "es",
+		"language": "Spanisch",
+		"path": "flags/es.svg"
+	},
+	{
+		"code": "fi",
+		"language": "Finnisch",
+		"path": "flags/fi.svg"
+	},
+	{
+		"code": "fr",
+		"language": "Französisch",
+		"path": "flags/fr.svg"
+	},
+	{
+		"code": "gb",
+		"language": "Englisch (britisch)",
+		"path": "flags/gb.svg"
+	},
+	{
+		"code": "gr",
+		"language": "Griechisch",
+		"path": "flags/gr.svg"
+	},
+	{
+		"code": "hr",
+		"language": "Kroatisch",
+		"path": "flags/hr.svg"
+	},
+	{
+		"code": "hu",
+		"language": "Ungarisch",
+		"path": "flags/hu.svg"
+	},
+	{
+		"code": "id",
+		"language": "Indonesisch",
+		"path": "flags/id.svg"
+	},
+	{
+		"code": "in",
+		"language": "Indisch",
+		"path": "flags/in.svg"
+	},
+	{
+		"code": "is",
+		"language": "Isländisch",
+		"path": "flags/is.svg"
+	},
+	{
+		"code": "it",
+		"language": "Italienisch",
+		"path": "flags/it.svg"
+	},
+	{
+		"code": "jp",
+		"language": "Japanisch",
+		"path": "flags/jp.svg"
+	},
+	{
+		"code": "kr",
+		"language": "Südkoreanisch",
+		"path": "flags/kr.svg"
+	},
+	{
+		"code": "ma",
+		"language": "Marokanisch",
+		"path": "flags/ma.svg"
+	},
+	{
+		"code": "nl",
+		"language": "Niederländisch",
+		"path": "flags/nl.svg"
+	},
+	{
+		"code": "no",
+		"language": "Norwegisch",
+		"path": "flags/no.svg"
+	},
+	{
+		"code": "pl",
+		"language": "Polnisch",
+		"path": "flags/pl.svg"
+	},
+	{
+		"code": "pt",
+		"language": "Portugiesisch",
+		"path": "flags/pt.svg"
+	},
+	{
+		"code": "ru",
+		"language": "Russisch",
+		"path": "flags/ru.svg"
+	},
+	{
+		"code": "se",
+		"language": "Schwedisch",
+		"path": "flags/se.svg"
+	},
+	{
+		"code": "th",
+		"language": "Thailändisch",
+		"path": "flags/th.svg"
+	},
+	{
+		"code": "tr",
+		"language": "Türkisch",
+		"path": "flags/tr.svg"
+	},
+	{
+		"code": "ua",
+		"language": "Ukrainisch",
+		"path": "flags/ua.svg"
+	},
+	{
+		"code": "us",
+		"language": "Englisch (amerikanisch)",
+		"path": "flags/us.svg"
+	},
+	{
+		"code": "vn",
+		"language": "Vietnamesisch",
+		"path": "flags/vn.svg"
+	}
+]
