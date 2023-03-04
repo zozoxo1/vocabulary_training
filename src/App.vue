@@ -31,6 +31,7 @@ export default defineComponent({
   --color-grey: rgb(44, 44, 44);
   --color-grey-1: rgba(44, 44, 44, .6);
   --color-contrast: white;
+  --color-contrast-2: rgb(134, 134, 134);
   --color-1: #d02092;
   --color-2: #2abc27;
   --color-3: #a1a1a1;
@@ -39,6 +40,7 @@ export default defineComponent({
   --color-success: #14a512;
   --color-tab-bar: rgba(8, 8, 8, 0.9);
   --color-tab-bar-2: rgba(13, 13, 13, 0.9);
+  --color-tab-bar-3: rgb(16, 16, 16);
 }
 
 #app {

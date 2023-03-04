@@ -44,6 +44,15 @@ class StackService extends Api {
 		return response
 	}
 
+	public async resetTraining(stack_id: string): Promise<Stack[]> {
+		const response = await this.put<any>('/stack/reset/' + stack_id)
+
+		if (response === undefined) {
+			throw new Error('Communication error')
+		}
+		return response
+	}
+
 	public async addVocabulary(
 		vocabulary: Vocabulary,
 		stack_id: string
@@ -58,6 +67,90 @@ class StackService extends Api {
 			throw new Error('Communication error')
 		}
 		return response
+	}
+
+	public async startTraining(
+		stack_id: string,
+		amount: number
+	): Promise<Stack[]> {
+		const response = await this.put<any>('/stack/training/' + stack_id, {
+			amount: amount,
+		})
+
+		if (response === undefined) {
+			throw new Error('Communication error')
+		}
+		return response
+	}
+
+	public async getStack(stack_id: string): Promise<Stack> {
+		const response = await this.get<any>('/stack/' + stack_id)
+		if (response === undefined) {
+			throw new Error('Communication error')
+		}
+
+		const vocabularies_default: Vocabulary[] = new Array<Vocabulary>()
+		const vocabularies_training: Vocabulary[] = new Array<Vocabulary>()
+		const vocabularies_expanded: Vocabulary[] = new Array<Vocabulary>()
+		const vocabularies_checked: Vocabulary[] = new Array<Vocabulary>()
+
+		for (const vocab of response.StandartStapel) {
+			if (vocab !== null)
+				vocabularies_default.push(
+					new Vocabulary(
+						vocab.id,
+						vocab.word,
+						vocab.translation,
+						vocab.description
+					)
+				)
+		}
+
+		for (const vocab of response.Trainingsstapel) {
+			if (vocab !== null)
+				vocabularies_training.push(
+					new Vocabulary(
+						vocab.id,
+						vocab.word,
+						vocab.translation,
+						vocab.description
+					)
+				)
+		}
+
+		for (const vocab of response.ErweiterterStapel) {
+			if (vocab !== null)
+				vocabularies_expanded.push(
+					new Vocabulary(
+						vocab.id,
+						vocab.word,
+						vocab.translation,
+						vocab.description
+					)
+				)
+		}
+
+		for (const vocab of response.gepruefterStapel) {
+			if (vocab !== null)
+				vocabularies_checked.push(
+					new Vocabulary(
+						vocab.id,
+						vocab.word,
+						vocab.translation,
+						vocab.description
+					)
+				)
+		}
+
+		return new Stack(
+			response._id,
+			response.spracheA,
+			response.spracheB,
+			vocabularies_default,
+			vocabularies_training,
+			vocabularies_expanded,
+			vocabularies_checked
+		)
 	}
 
 	public async getStacks(): Promise<Stack[]> {
@@ -75,47 +168,51 @@ class StackService extends Api {
 			const vocabularies_checked: Vocabulary[] = new Array<Vocabulary>()
 
 			for (const vocab of stack.StandartStapel) {
-				vocabularies_default.push(
-					new Vocabulary(
-						vocab.id,
-						vocab.word,
-						vocab.translation,
-						vocab.description
+				if (vocab !== null)
+					vocabularies_default.push(
+						new Vocabulary(
+							vocab.id,
+							vocab.word,
+							vocab.translation,
+							vocab.description
+						)
 					)
-				)
 			}
 
 			for (const vocab of stack.Trainingsstapel) {
-				vocabularies_training.push(
-					new Vocabulary(
-						vocab.id,
-						vocab.word,
-						vocab.translation,
-						vocab.description
+				if (vocab !== null)
+					vocabularies_training.push(
+						new Vocabulary(
+							vocab.id,
+							vocab.word,
+							vocab.translation,
+							vocab.description
+						)
 					)
-				)
 			}
 
 			for (const vocab of stack.ErweiterterStapel) {
-				vocabularies_expanded.push(
-					new Vocabulary(
-						vocab.id,
-						vocab.word,
-						vocab.translation,
-						vocab.description
+				if (vocab !== null)
+					vocabularies_expanded.push(
+						new Vocabulary(
+							vocab.id,
+							vocab.word,
+							vocab.translation,
+							vocab.description
+						)
 					)
-				)
 			}
 
 			for (const vocab of stack.gepruefterStapel) {
-				vocabularies_checked.push(
-					new Vocabulary(
-						vocab.id,
-						vocab.word,
-						vocab.translation,
-						vocab.description
+				if (vocab !== null)
+					vocabularies_checked.push(
+						new Vocabulary(
+							vocab.id,
+							vocab.word,
+							vocab.translation,
+							vocab.description
+						)
 					)
-				)
 			}
 
 			stacks.push(
@@ -149,47 +246,51 @@ class StackService extends Api {
 			const vocabularies_checked: Vocabulary[] = new Array<Vocabulary>()
 
 			for (const vocab of stack.StandartStapel) {
-				vocabularies_default.push(
-					new Vocabulary(
-						vocab.id,
-						vocab.word,
-						vocab.translation,
-						vocab.description
+				if (vocab !== null)
+					vocabularies_default.push(
+						new Vocabulary(
+							vocab.id,
+							vocab.word,
+							vocab.translation,
+							vocab.description
+						)
 					)
-				)
 			}
 
 			for (const vocab of stack.Trainingsstapel) {
-				vocabularies_training.push(
-					new Vocabulary(
-						vocab.id,
-						vocab.word,
-						vocab.translation,
-						vocab.description
+				if (vocab !== null)
+					vocabularies_training.push(
+						new Vocabulary(
+							vocab.id,
+							vocab.word,
+							vocab.translation,
+							vocab.description
+						)
 					)
-				)
 			}
 
 			for (const vocab of stack.ErweiterterStapel) {
-				vocabularies_expanded.push(
-					new Vocabulary(
-						vocab.id,
-						vocab.word,
-						vocab.translation,
-						vocab.description
+				if (vocab !== null)
+					vocabularies_expanded.push(
+						new Vocabulary(
+							vocab.id,
+							vocab.word,
+							vocab.translation,
+							vocab.description
+						)
 					)
-				)
 			}
 
 			for (const vocab of stack.gepruefterStapel) {
-				vocabularies_checked.push(
-					new Vocabulary(
-						vocab.id,
-						vocab.word,
-						vocab.translation,
-						vocab.description
+				if (vocab !== null)
+					vocabularies_checked.push(
+						new Vocabulary(
+							vocab.id,
+							vocab.word,
+							vocab.translation,
+							vocab.description
+						)
 					)
-				)
 			}
 
 			if (

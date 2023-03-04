@@ -8,11 +8,12 @@
     <ion-content>
       <swiper :slides-per-view="1" :space-between="50">
         <swiper-slide v-for="stack in stacks" :key="stack.id">
-          <TrainingSlide v-bind="trainingSlideProps(stack)"></TrainingSlide>
+          <TrainingSlide v-bind="trainingSlideProps(stack)" @removeTraining="removeTraining"></TrainingSlide>
         </swiper-slide>
       </swiper>
 
-      <AddButton></AddButton>
+      <h1 class="no-training center" v-if="stacks.length == 0 && !dataLoading">Kein Training vorhanden</h1>
+      <ion-spinner class="center" v-if="dataLoading"></ion-spinner>
     </ion-content>
   </ion-page>
 </template>
@@ -24,7 +25,7 @@
 <!-- geprüft stapel: man hat die vokabel richtig -->
 
 <script lang="ts">
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonModal, IonProgressBar } from '@ionic/vue';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonModal, IonProgressBar, IonSpinner } from '@ionic/vue';
 import { ref } from 'vue';
 import { Options, Vue } from 'vue-class-component';
 import AddButton from '@/components/AddButton.vue';
@@ -54,7 +55,8 @@ import 'swiper/swiper.min.css';
     VocabularyProgressBar,
     TrainingSlide,
     Swiper,
-    SwiperSlide
+    SwiperSlide,
+    IonSpinner
   },
 })
 
@@ -62,6 +64,12 @@ export default class TrainingView extends Vue {
 
   public stacks: Stack[] = new Array<Stack>();
   private stackService: StackService = container.resolve(StackService);
+  public dataLoading: boolean = true;
+
+  public async removeTraining(stack_id: string): Promise<void> {
+    await this.stackService.resetTraining(stack_id);
+    await this.fetchTrainingStacks();
+  }
 
   public trainingSlideProps(stack: Stack) {
     return {
@@ -74,10 +82,16 @@ export default class TrainingView extends Vue {
   }
 
   private async fetchTrainingStacks(): Promise<void> {
+    this.dataLoading = true;
     this.stacks = await (await this.stackService.getTrainingStacks()).reverse();
+    this.dataLoading = false;
   }
 
   public async mounted(): Promise<void> {
+    await this.fetchTrainingStacks()
+  }
+
+  async beforeUpdate(): Promise<void> {
     await this.fetchTrainingStacks()
   }
 
@@ -85,6 +99,17 @@ export default class TrainingView extends Vue {
 </script>
 
 <style lang="scss" scoped>
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+}
+
+.no-training {
+  color: var(--color-grey-1)
+}
+
 .swiper {
   height: 35em;
   top: 50%;

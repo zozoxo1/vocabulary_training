@@ -19,7 +19,8 @@
                 :progressValue="((stack.stackExpanded.length + stack.stackChecked.length) - stack.stackExpanded.length) / (stack.stackExpanded.length + stack.stackChecked.length)">
             </VocabularyProgressBar>
 
-            <ButtonRow deleteButtonText="Löschen" saveButtonText="Fortsetzen"></ButtonRow>
+            <ButtonRow @deleteEvent="$emit('removeTraining', stack.id)" deleteButtonText="Löschen"
+                @continueEvent="startTraining" saveButtonText="Fortsetzen"></ButtonRow>
         </div>
     </div>
 </template>
@@ -43,8 +44,14 @@ export default defineComponent({
         'srcSecondLanguage',
         'nameFirstLanguage',
         'nameSecondLanguage',
-        'stack'
+        'stack',
+        'removeTraining'
     ],
+    methods: {
+        startTraining() {
+            this.$router.push({ name: 'vocabulary-training', params: { id: this.stack.id } });
+        }
+    }
 });
 </script>
 

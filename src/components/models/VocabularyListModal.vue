@@ -7,7 +7,7 @@
     <ion-content>
         <flags :srcFirstLanguage="srcFirstLanguage" :srcSecondLanguage="srcSecondLanguage"
             :nameFirstLanguage="nameFirstLanguage" :nameSecondLanguage="nameSecondLanguage"></flags>
-        <vocabulary-list :stack="stack"></vocabulary-list>
+        <vocabulary-list ref="vocabList" :stack="stack" :update="updateList"></vocabulary-list>
         <button-row @deleteEvent="closeModal" @continueEvent="presentAlert" deleteButtonText="Schließen"
             saveButtonText="Hinzufügen"></button-row>
     </ion-content>
@@ -21,7 +21,7 @@ import {
     IonToolbar,
     modalController
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { alertController } from "@ionic/vue";
 import Flags from "../Flags.vue";
 import { Vocabulary } from "@/utils/Vocabulary";
@@ -29,6 +29,8 @@ import VocabularyList from "../VocabularyList/VocabularyList.vue";
 import ButtonRow from "../ButtonRow.vue";
 import { StackService } from "@/services/Stack.Service";
 import { container } from "tsyringe";
+
+const stackService: StackService = container.resolve(StackService);
 
 export default defineComponent({
     name: "VocabularyListModal",
@@ -46,24 +48,30 @@ export default defineComponent({
         'srcSecondLanguage',
         'nameFirstLanguage',
         'nameSecondLanguage',
-        'stack'
+        'stack',
+        'update'
     ],
     methods: {
         closeModal(data?: string, role?: string) {
             modalController.dismiss(data || '', role || '');
         },
-    },
-    setup(props) {
-        const stackService: StackService = container.resolve(StackService);
 
-        const presentAlert = async () => {
+        async presentAlert() {
             const alert = await alertController.create({
                 header: 'Vokabel einfügen',
-                buttons: ['Abbrechen', 'Einfügen'],
+                buttons: [
+                    {
+                        text: 'Abbrechen',
+                        role: 'cancel'
+                    },
+                    {
+                        text: 'Einfügen',
+                        role: 'success'
+                    }],
                 inputs: [
                     {
                         type: 'textarea',
-                        placeholder: props.nameFirstLanguage,
+                        placeholder: this.nameFirstLanguage,
                         attributes: {
                             minlength: 1,
                             maxlength: 100,
@@ -71,7 +79,7 @@ export default defineComponent({
                     },
                     {
                         type: 'textarea',
-                        placeholder: props.nameSecondLanguage,
+                        placeholder: this.nameSecondLanguage,
                         attributes: {
                             minlength: 1,
                             maxlength: 100,
@@ -89,6 +97,7 @@ export default defineComponent({
             });
 
             alert.onDidDismiss().then((data) => {
+
                 if (data.role === 'cancel') {
                     return;
                 }
@@ -97,16 +106,22 @@ export default defineComponent({
                 const secondLanguage = data.data.values[1];
                 const description = data.data.values[2];
 
+                if (firstLanguage === '' || secondLanguage === '' || description === '') {
+                    return;
+                }
+
                 const vocabulary = new Vocabulary(0, firstLanguage, secondLanguage, description);
 
-                stackService.addVocabulary(vocabulary, props.stack.id);
+                stackService.addVocabulary(vocabulary, this.stack.id);
+                this.updateList++;
             });
 
-            await alert.present();
-        };
-
+            return await alert.present();
+        }
+    },
+    data() {
         return {
-            presentAlert
+            updateList: 1
         }
     }
 });

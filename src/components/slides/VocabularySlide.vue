@@ -5,10 +5,22 @@
         </Flags>
 
         <div class="content">
-            <p>{{ vocabularies }} Vokabel{{ vocabularies == 1 ? '' : 'n' }} im Stack</p>
+            <div class="actions">
+                <p>{{ vocabularies }} Vokabel{{ vocabularies == 1 ? '' : 'n' }} im Stack</p>
+                <div>
+                    <ion-button :disabled="stack.trainingBegan" class="start-training"
+                        @click="$emit('startTraining', stack.id)">
+                        <ion-icon :icon="playCircleOutline"></ion-icon>
+                    </ion-button>
+                    <ion-button @click="$emit('stopTraining', stack.id)" :disabled="!stack.trainingBegan"
+                        class="stop-training">
+                        <ion-icon :icon="closeCircleOutline"></ion-icon>
+                    </ion-button>
+                </div>
+            </div>
 
             <ButtonRow
-                @continueEvent="$emit('openVocabularyListFunction', srcFirstLanguage, srcSecondLanguage, nameFirstLanguage, nameSecondLanguage, stack)"
+                @continueEvent="$emit('openVocabularyListFunction', srcFirstLanguage, srcSecondLanguage, nameFirstLanguage, nameSecondLanguage, stack, update)"
                 @deleteEvent="$emit('deleteStackFunction')" deleteButtonText="Löschen" saveButtonText="Hinzufügen">
             </ButtonRow>
         </div>
@@ -19,12 +31,13 @@
 import { defineComponent } from "vue";
 import ButtonRow from '@/components/ButtonRow.vue';
 import Flags from '@/components/Flags.vue';
+import { closeCircleOutline, playCircleOutline } from "ionicons/icons";
 
 export default defineComponent({
     name: "VocabularySlide",
     components: {
         ButtonRow,
-        Flags
+        Flags,
     },
     props: [
         'vocabularies',
@@ -34,8 +47,17 @@ export default defineComponent({
         'nameSecondLanguage',
         'openVocabularyListFunction',
         'deleteStackFunction',
-        'stack'
+        'stack',
+        'update',
+        'startTraining',
+        'stopTraining'
     ],
+    data() {
+        return {
+            playCircleOutline,
+            closeCircleOutline
+        }
+    }
 });
 </script>
 
@@ -49,5 +71,13 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
+}
+
+.actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-inline: 2em;
 }
 </style>

@@ -5,7 +5,9 @@
             <p>{{ nameFirstLanguage }}</p>
         </div>
         <div>
-            <p>&hArr;</p>
+            <p v-if="direction == '' || direction == undefined">&#8651;</p>
+            <p v-if="direction == 'left'">&#8647;</p>
+            <p v-if="direction == 'right'">&#8649;</p>
         </div>
         <div>
             <img class="flag" :src="require(`@/assets/${srcSecondLanguage}`)">
@@ -19,7 +21,14 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
     name: "Flags",
-    props: ['srcFirstLanguage', 'srcSecondLanguage', 'nameFirstLanguage', 'nameSecondLanguage']
+    props: [
+        'srcFirstLanguage',
+        'srcSecondLanguage',
+        'nameFirstLanguage',
+        'nameSecondLanguage',
+        'direction'
+    ],
+
 });
 </script>
 

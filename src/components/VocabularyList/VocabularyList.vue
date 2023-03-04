@@ -1,62 +1,93 @@
 <template>
     <ion-list>
-        <ion-item v-for="vocabulary in vocabularies" :key="vocabulary.getId">
-            <div>
-                <p>{{ stack.stackLanguages[0] }}</p>
-                <h4>{{ vocabulary.getWord }}</h4>
-                <p>{{ stack.stackLanguages[1] }}</p>
-                <h4>{{ vocabulary.getTranslation }}</h4>
-                <p>Beschreibung</p>
-                <h4>{{ vocabulary.getDescription }}</h4>
-            </div>
-        </ion-item>
+        <ion-item-sliding v-for="vocabulary in vocabularies" :key="vocabulary.getId">
+            <ion-item-options side="end">
+                <ion-item-option expandable color="danger" @click="() => { }">
+                    <ion-icon :icon="trash"></ion-icon>
+                    Löschen
+                </ion-item-option>
+            </ion-item-options>
+            <ion-item>
+                <div>
+                    <p>{{ stack.stackLanguages[0] }}</p>
+                    <h4>{{ vocabulary.getWord }}</h4>
+                    <p>{{ stack.stackLanguages[1] }}</p>
+                    <h4>{{ vocabulary.getTranslation }}</h4>
+                    <p>Beschreibung</p>
+                    <h4>{{ vocabulary.getDescription }}</h4>
+                </div>
+            </ion-item>
+        </ion-item-sliding>
+
+        <h1 class="no-vocabularies center" v-if="vocabularies.length == 0">Keine Vokabeln vorhanden</h1>
     </ion-list>
 </template>
   
 <script lang="ts">
 import { defineComponent } from "vue";
-import { IonItem, IonList } from '@ionic/vue';
+import { IonItem, IonList, IonItemSliding } from '@ionic/vue';
 import { Vocabulary } from "@/utils/Vocabulary";
+import { trash } from 'ionicons/icons';
+import { StackService } from "@/services/Stack.Service";
+import { container } from "tsyringe";
 
-let vocabularies: Vocabulary[] = new Array<Vocabulary>();
+const stackService: StackService = container.resolve(StackService);
 
 export default defineComponent({
     name: "VocabularyList",
     components: {
         IonItem,
-        IonList
+        IonList,
+        IonItemSliding
     },
     props: [
-        'stack'
+        'stack',
+        'update'
     ],
-
-    setup(props) {
-        props.stack.stackDefault.forEach((item: Vocabulary) => {
-            vocabularies.push(item);
-        });
-
-        props.stack.stackTraining.forEach((item: Vocabulary) => {
-            vocabularies.push(item);
-        });
-
-        props.stack.stackExpanded.forEach((item: Vocabulary) => {
-            vocabularies.push(item);
-        });
-
-        props.stack.stackChecked.forEach((item: Vocabulary) => {
-            vocabularies.push(item);
-        });
-
-        return {
-            vocabularies
+    methods: {
+        async fetchData() {
+            await stackService.getStack(this.stack.id).then((data) => {
+                this.vocabularies.splice(0, this.vocabularies.length)
+                this.vocabularies.push(...data.stackDefault.concat(data.stackTraining, data.stackExpanded, data.stackChecked))
+            });
         }
+    },
+    watch: {
+        async update() {
+            // only god knows why this is working ~ Zoe Günther 2023
+            await setTimeout(() => {
+                this.fetchData();
+            }, 100)
+        }
+    },
+
+    data() {
+        return {
+            trash,
+            vocabularies: [] as Vocabulary[]
+        }
+    },
+
+    async mounted() {
+        await this.fetchData();
     }
 });
 </script>
 
 <style lang="scss" scoped>
+.center {
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    position: absolute;
+}
+
+.no-vocabularies {
+    color: var(--color-contrast-2)
+}
+
 ion-item {
-    --background: var(--color-tab-bar-2) !important;
+    --background: var(--color-tab-bar-3) !important;
     box-sizing: border-box;
     color: var(--color-contrast);
     --color: var(--color-contrast);

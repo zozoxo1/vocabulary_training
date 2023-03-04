@@ -53,6 +53,10 @@ class Stack {
 		)
 	}
 
+	public get trainingBegan(): boolean {
+		return this.stackDefault.length < this.stackSize
+	}
+
 	public get stackLanguages(): [string, string] {
 		let l1 = this.lang_a
 		let l2 = this.lang_b

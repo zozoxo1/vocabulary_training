@@ -8,6 +8,11 @@ const routes: Array<RouteRecordRaw> = [
 		redirect: '/training',
 	},
 	{
+		name: 'vocabulary-training',
+		path: '/vocabulary-training/:id',
+		component: () => import('../views/VocabularyTrainingView.vue'),
+	},
+	{
 		path: '/',
 		component: Page,
 		children: [
