@@ -129,7 +129,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 ion-content,
 ion-toolbar {
-    --background: var(--color-tab-bar) !important;
+    --background: var(--clr-dark) !important;
     box-sizing: border-box;
     color: var(--color-contrast);
     --color: var(--color-contrast);

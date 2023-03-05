@@ -207,7 +207,7 @@ ion-button {
 
 ion-content,
 ion-toolbar {
-    --background: var(--color-tab-bar) !important;
+    --background: var(--clr-dark) !important;
     box-sizing: border-box;
     color: var(--color-contrast);
     --color: var(--color-contrast);
@@ -216,7 +216,7 @@ ion-toolbar {
 ion-item,
 ion-list {
     width: 14em;
-    --background: var(--color-tab-bar) !important;
+    --background: var(--clr-dark) !important;
     box-sizing: border-box;
     color: var(--color-contrast);
     --color: var(--color-contrast);

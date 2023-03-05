@@ -123,7 +123,7 @@ export default class VocabularyView extends Vue {
 
   public async startTraining(stack_id: string): Promise<void> {
     const alert = await alertController.create({
-      header: 'Please enter your info',
+      header: 'Anzahl an Vokabeln zum trainieren',
       buttons: [
         {
           text: 'Abbrechen',

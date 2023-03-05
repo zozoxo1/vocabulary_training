@@ -35,6 +35,34 @@ class StackService extends Api {
 		return response
 	}
 
+	public async failedCardAnswer(
+		stack_id: string,
+		card_id: number
+	): Promise<Stack[]> {
+		const response = await this.put<any>(
+			'/stack/failed/' + stack_id + '/' + card_id
+		)
+
+		if (response === undefined) {
+			throw new Error('Communication error')
+		}
+		return response
+	}
+
+	public async successCardAnswer(
+		stack_id: string,
+		card_id: number
+	): Promise<Stack[]> {
+		const response = await this.put<any>(
+			'/stack/success/' + stack_id + '/' + card_id
+		)
+
+		if (response === undefined) {
+			throw new Error('Communication error')
+		}
+		return response
+	}
+
 	public async deleteStack(stack_id: string): Promise<Stack[]> {
 		const response = await this.delete<any>('/stack/' + stack_id)
 

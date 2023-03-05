@@ -21,7 +21,7 @@
 
             <ButtonRow
                 @continueEvent="$emit('openVocabularyListFunction', srcFirstLanguage, srcSecondLanguage, nameFirstLanguage, nameSecondLanguage, stack, update)"
-                @deleteEvent="$emit('deleteStackFunction')" deleteButtonText="Löschen" saveButtonText="Hinzufügen">
+                @deleteEvent="$emit('deleteStackFunction')" deleteButtonText="Löschen" saveButtonText="Bearbeiten">
             </ButtonRow>
         </div>
     </div>
@@ -62,17 +62,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.vocabulary-stack {
-    background: var(--color-tab-bar);
-    height: 90%;
-    width: 90%;
-    border-radius: 2em;
-    color: var(--color-contrast);
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-}
-
 .actions {
     display: flex;
     flex-direction: row;

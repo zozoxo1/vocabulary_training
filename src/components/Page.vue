@@ -49,7 +49,7 @@ ion-tab-bar {
     border-radius: 1em;
     margin: 1em 0.3em;
     height: 6em;
-    background: var(--color-tab-bar);
+    background: var(--clr-dark);
 }
 
 ion-tab-button {

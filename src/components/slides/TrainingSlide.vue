@@ -19,8 +19,10 @@
                 :progressValue="((stack.stackExpanded.length + stack.stackChecked.length) - stack.stackExpanded.length) / (stack.stackExpanded.length + stack.stackChecked.length)">
             </VocabularyProgressBar>
 
-            <ButtonRow @deleteEvent="$emit('removeTraining', stack.id)" deleteButtonText="Löschen"
-                @continueEvent="startTraining" saveButtonText="Fortsetzen"></ButtonRow>
+            <ButtonRow :show-delete="(stack.stackChecked.length / stack.stackSize) != 1"
+                @deleteEvent="$emit('removeTraining', stack.id)" deleteButtonText="Löschen" @continueEvent="startTraining"
+                :saveButtonText="(stack.stackChecked.length / stack.stackSize) == 1 ? 'Training beenden' : 'Fortsetzen'">
+            </ButtonRow>
         </div>
     </div>
 </template>
@@ -45,25 +47,19 @@ export default defineComponent({
         'nameFirstLanguage',
         'nameSecondLanguage',
         'stack',
-        'removeTraining'
+        'removeTraining',
     ],
     methods: {
         startTraining() {
+            if ((this.stack.stackChecked.length / this.stack.stackSize) == 1) {
+                this.$emit('removeTraining', this.stack.id);
+                return;
+            }
+
             this.$router.push({ name: 'vocabulary-training', params: { id: this.stack.id } });
         }
     }
 });
 </script>
 
-<style lang="scss" scoped>
-.vocabulary-stack {
-    background: var(--color-tab-bar);
-    height: 90%;
-    width: 90%;
-    border-radius: 2em;
-    color: var(--color-contrast);
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-}
-</style>
+<style lang="scss" scoped></style>

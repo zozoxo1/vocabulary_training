@@ -38,14 +38,42 @@ export default defineComponent({
   --color-orange: rgb(196, 116, 11);
   --color-orange-1: rgba(196, 116, 11, .7);
   --color-success: #14a512;
-  --color-tab-bar: rgba(8, 8, 8, 0.9);
   --color-tab-bar-2: rgba(13, 13, 13, 0.9);
   --color-tab-bar-3: rgb(16, 16, 16);
+
+  --clr-toolbar: black;
+  --clr-dark: rgb(32, 32, 32);
+  --clr-red: red;
+  --clr-red-dark: rgb(126, 0, 0);
+  --clr-green: green;
+  --clr-green-dark: rgb(4, 68, 12);
+  --clr-white: white;
+}
+
+ion-toolbar>ion-title {
+  font-weight: bold;
+  color: var(--clr-toolbar);
+}
+
+ion-toolbar:last-of-type {
+  --border-width: 0 0 0px !important;
 }
 
 #app {
-  font-family: var(--font);
+  font-family: var(--font) !important;
   text-align: center;
   color: #448cd3;
+}
+
+.vocabulary-stack {
+  background: var(--clr-dark);
+  height: 90%;
+  width: 90%;
+  border-radius: 1em;
+  color: var(--color-contrast);
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  position: relative;
 }
 </style>

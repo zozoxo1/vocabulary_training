@@ -33,7 +33,7 @@ export default defineComponent({
     color: var(--color-btn-primary);
     position: absolute;
     bottom: 0em;
-    right: 0.5em;
+    right: 0.3em;
     z-index: 10;
     --background: none;
     --padding-start: 0;

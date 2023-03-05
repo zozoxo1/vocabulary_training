@@ -5,7 +5,7 @@
                 <ion-button @click="exit">
                     <ion-icon :icon="exitOutline"></ion-icon>
                 </ion-button>
-                <ion-button @click="changeDirection">
+                <ion-button :disabled="cardTurned" @click="changeDirection">
                     <ion-icon :icon="swapHorizontalOutline"></ion-icon>
                 </ion-button>
             </ion-toolbar>
@@ -15,43 +15,57 @@
                 :src-second-language="`flags/${stack.languageB}.svg`" :name-first-language="stack.stackLanguages[0]"
                 :name-second-language="stack.stackLanguages[1]"></Flags>
             <div class="vocabulary_card">
-                <img class="language" :src="require(`@/assets/flags/${getLanguage()}.svg`)">
-                <h1 class="word">Donaudampfschifffahrtselektrizitätenhauptbetriebswerkbauunterbeamtengesellschaft</h1>
+                <img class="language" :src="require(`@/assets/flags/${language}.svg`)">
+                <div class="word">
+                    <h1>{{ language == stack.languageA ? currentVocabulary.getWord :
+                        currentVocabulary.getTranslation }}</h1>
+                    <p v-if="cardTurned">{{ currentVocabulary.getDescription }}</p>
+                    <h1 class="info-dark" v-if="stack.stackTraining.length == 0">
+                        Drücke Weiter<br>um fortzufahren
+                    </h1>
+                </div>
             </div>
-            <ion-button class="turnCard">
-                <ion-icon :icon="refreshOutline"></ion-icon>
-                Umdrehen
-            </ion-button>
-
+            <div class="actions">
+                <ion-button v-if="cardTurned && stack.stackTraining.length > 0" @click="nextVocabulary(false)">
+                    <ion-icon :icon="thumbsDownOutline"></ion-icon>
+                </ion-button>
+                <ion-button v-if="stack.stackTraining.length > 0" class="turnCard" @click="turnCard">
+                    <ion-icon :icon="refreshOutline"></ion-icon>
+                    Umdrehen
+                </ion-button>
+                <ion-button v-if="cardTurned && stack.stackTraining.length > 0" @click="nextVocabulary(true)">
+                    <ion-icon :icon="thumbsUpOutline"></ion-icon>
+                </ion-button>
+                <ion-button @click="resetTraining" v-if="stack.stackTraining.length == 0">
+                    Weiter
+                    <ion-icon :icon="caretForwardOutline"></ion-icon>
+                </ion-button>
+            </div>
             <div class="progress">
                 <div class="progress_title">
                     <p>Noch {{ stack.stackTraining.length }} Vokabel{{ stack.stackTraining.length == 1 ? '' : 'n' }}</p>
-                    <p>({{ Math.round(((progress_length / stack.stackTraining.length) - stack.stackTraining.length) * 100)
+                    <p>({{ (Math.round((progress_length - stack.stackTraining.length) / (progress_length) *
+                        100) | 0)
                     }}%)</p>
                 </div>
                 <ion-progress-bar
-                    :value="(progress_length / stack.stackTraining.length) - stack.stackTraining.length"></ion-progress-bar>
+                    :value="(progress_length - stack.stackTraining.length) / (progress_length)"></ion-progress-bar>
             </div>
         </ion-content>
     </ion-page>
 </template>
   
 <script lang="ts">
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonModal, IonProgressBar, IonSpinner } from '@ionic/vue';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonPage, IonModal, IonProgressBar, IonSpinner, alertController } from '@ionic/vue';
 import { defineComponent, ref } from 'vue';
-import { Options, Vue } from 'vue-class-component';
-import AddButton from '@/components/AddButton.vue';
-import ButtonRow from '@/components/ButtonRow.vue';
-import VocabularyProgressBar from '@/components/VocabularyProgressBar.vue';
 import { Stack } from '@/utils/Stack';
 import { StackService } from '@/services/Stack.Service';
 import { container } from 'tsyringe';
-import TrainingSlide from '@/components/slides/TrainingSlide.vue';
-import { Swiper, SwiperSlide } from 'swiper/vue';
 
 import 'swiper/swiper.min.css';
-import { exitOutline, refreshOutline, swapHorizontalOutline } from 'ionicons/icons';
+import { caretForwardOutline, exitOutline, refreshOutline, swapHorizontalOutline, thumbsDownOutline, thumbsUpOutline } from 'ionicons/icons';
 import Flags from '@/components/Flags.vue';
+import { Vocabulary } from '@/utils/Vocabulary';
 
 const directions = ['left', 'right', ''];
 
@@ -65,8 +79,13 @@ export default defineComponent({
         Flags
     },
     methods: {
+        turnCard() {
+            this.cardTurned = !this.cardTurned;
+            this.language = this.language == this.stack.languageA ? this.stack.languageB : this.stack.languageA;
+        },
         changeDirection() {
             this.direction = directions[(directions.indexOf(this.direction) + 1) % directions.length];
+            this.setLanguage();
         },
         exit() {
             this.$router.push('/training');
@@ -80,13 +99,83 @@ export default defineComponent({
                 this.stack = stack;
             });
         },
-        getLanguage() {
-            if (this.direction == 'left')
-                return this.stack.languageB;
-            else if (this.direction == 'right')
-                return this.stack.languageA;
+        setLanguage() {
+            if (this.direction == 'left') {
+                this.language = this.stack.languageB;
+            } else if (this.direction == 'right') {
+                this.language = this.stack.languageA;
+            } else {
+                this.language = Math.floor(Math.random() * 2) == 0 ? this.stack.languageA : this.stack.languageB;
+            }
+        },
+
+        async nextVocabulary(vocabularyCorrect: boolean) {
+            // hier api request mit richtig oder falsch mit current vocabulary
+            if (vocabularyCorrect)
+                await this.stackService.successCardAnswer(this.stack.id, this.currentVocabulary.getId);
             else
-                return Math.floor(Math.random() * 2) == 0 ? this.stack.languageA : this.stack.languageB;
+                await this.stackService.failedCardAnswer(this.stack.id, this.currentVocabulary.getId);
+
+            this.stack.stackTraining.shift();
+            // this.progress_length = this.stack.stackTraining.length;
+            this.cardTurned = false;
+            this.setLanguage();
+
+            if (this.stack.stackTraining.length > 0) {
+                this.currentVocabulary = this.stack.stackTraining[0];
+            } else {
+                this.$router.push('/training');
+            }
+        },
+
+        async resetTraining() {
+            const alert = await alertController.create({
+                header: 'Anzahl an Vokabeln zum trainieren',
+                buttons: [
+                    {
+                        text: 'Abbrechen',
+                        role: 'cancel'
+                    },
+                    {
+                        text: 'Training starten',
+                        role: 'start'
+                    }],
+                inputs: [
+                    {
+                        type: 'number',
+                        placeholder: 'Anzahl Vokabeln',
+                        min: 1,
+                        max: 100,
+                    },
+                ],
+            });
+
+            alert.onDidDismiss().then(async (data) => {
+                if (data.data.values[0] == undefined || data.data.values[0] == '') return;
+                if (data.role == 'cancel') return;
+
+                if (data.role == 'start') {
+                    await this.stackService.startTraining(this.stack.id, Number.parseInt(data.data.values[0]));
+
+                    this.reset();
+                }
+            });
+
+            await alert.present();
+        },
+
+        async reset() {
+            await this.fetchData();
+            setTimeout(() => {
+                this.progress_length = this.stack.stackTraining.length;
+                this.setLanguage();
+
+                if (this.stack.stackTraining.length > 0) {
+                    this.currentVocabulary = this.stack.stackTraining[0];
+                } else {
+                    this.currentVocabulary = new Vocabulary(0, '', '', '') as Vocabulary;
+                }
+            }, 100)
         }
     },
     data() {
@@ -97,10 +186,16 @@ export default defineComponent({
             exitOutline,
             swapHorizontalOutline,
             refreshOutline,
+            caretForwardOutline,
             direction: 'right',
             stackService,
             stack: new Stack("0", 'placeholder', 'placeholder', [], [], [], []) as Stack,
             progress_length,
+            thumbsDownOutline,
+            thumbsUpOutline,
+            cardTurned: false,
+            language: 'de',
+            currentVocabulary: new Vocabulary(0, '', '', '') as Vocabulary
         }
     },
     mounted() {
@@ -108,13 +203,16 @@ export default defineComponent({
     },
 
     beforeUpdate() {
-        this.fetchData();
-        this.progress_length = this.stack.stackTraining.length;
+        this.reset();
     },
 })
 </script>
   
 <style lang="scss" scoped>
+.info-dark {
+    color: var(--color-contrast-2);
+}
+
 .progress {
     position: absolute;
     bottom: 2.5em;
@@ -151,10 +249,29 @@ export default defineComponent({
     top: 42%;
     left: 50%;
     translate: -50% -50%;
-    word-break: break-all;
     width: 100%;
     padding-inline: 1em;
     box-sizing: border-box;
+    text-align: center;
+    height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.vocabulary_card .word h1 {
+    font-size: 2em;
+    margin: 0;
+    padding: 0;
+    word-break: break-all;
+}
+
+.vocabulary_card .word p {
+    position: absolute;
+    bottom: 0;
+    word-break: break-all;
 }
 
 .vocabulary_card .language {
@@ -165,7 +282,7 @@ export default defineComponent({
 
 ion-content,
 ion-toolbar {
-    --background: var(--color-tab-bar) !important;
+    --background: var(--clr-dark) !important;
     box-sizing: border-box;
     color: var(--color-contrast);
     --color: var(--color-contrast);
