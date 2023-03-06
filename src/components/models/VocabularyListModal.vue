@@ -118,9 +118,9 @@ export default defineComponent({
                     return;
                 }
 
-                const vocabulary = new Vocabulary(0, firstLanguage, secondLanguage, description);
+                const vocabulary = new Vocabulary(firstLanguage, secondLanguage, description);
 
-                stackService.addVocabulary(vocabulary, this.stack.id);
+                stackService.addVocabulary(vocabulary, this.stack._id);
                 this.updateList++;
             });
 

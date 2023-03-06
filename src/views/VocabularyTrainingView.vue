@@ -11,47 +11,47 @@
             </ion-toolbar>
         </ion-header>
         <ion-content>
-            <Flags :direction="direction" :src-first-language="`flags/${stack.languageA}.svg`"
-                :src-second-language="`flags/${stack.languageB}.svg`" :name-first-language="stack.stackLanguages[0]"
-                :name-second-language="stack.stackLanguages[1]"></Flags>
+            <Flags :direction="direction" :src-first-language="`flags/${stack.lang_a}.svg`"
+                :src-second-language="`flags/${stack.lang_b}.svg`" :name-first-language="stackLanguages(stack)[0]"
+                :name-second-language="stackLanguages(stack)[1]"></Flags>
             <div class="vocabulary_card">
                 <img class="language" :src="require(`@/assets/flags/${language}.svg`)">
                 <div class="word">
-                    <h1>{{ language == stack.languageA ? currentVocabulary.getWord :
-                        currentVocabulary.getTranslation }}</h1>
-                    <p v-if="cardTurned">{{ currentVocabulary.getDescription }}</p>
-                    <h1 class="info-dark" v-if="stack.stackTraining.length == 0">
+                    <h1>{{ language == stack.lang_a ? currentVocabulary.word :
+                        currentVocabulary.translation }}</h1>
+                    <p v-if="cardTurned">{{ currentVocabulary.description }}</p>
+                    <h1 class="info-dark" v-if="stack.stack_training.length == 0">
                         Drücke Weiter<br>um fortzufahren
                     </h1>
                 </div>
             </div>
             <div class="actions">
-                <ion-button class="small wrong" v-if="cardTurned && stack.stackTraining.length > 0"
+                <ion-button class="small wrong" v-if="cardTurned && stack.stack_training.length > 0"
                     @click="nextVocabulary(false)">
                     <ion-icon :icon="thumbsDownOutline"></ion-icon>
                 </ion-button>
-                <ion-button v-if="stack.stackTraining.length > 0" class="turnCard" @click="turnCard">
+                <ion-button v-if="stack.stack_training.length > 0" class="turnCard" @click="turnCard">
                     <ion-icon :icon="refreshOutline"></ion-icon>
                     Umdrehen
                 </ion-button>
-                <ion-button class="small right" v-if="cardTurned && stack.stackTraining.length > 0"
+                <ion-button class="small right" v-if="cardTurned && stack.stack_training.length > 0"
                     @click="nextVocabulary(true)">
                     <ion-icon :icon="thumbsUpOutline"></ion-icon>
                 </ion-button>
-                <ion-button @click="resetTraining" v-if="stack.stackTraining.length == 0">
+                <ion-button @click="resetTraining" v-if="stack.stack_training.length == 0">
                     Weiter
                     <ion-icon :icon="caretForwardOutline"></ion-icon>
                 </ion-button>
             </div>
             <div class="progress">
                 <div class="progress_title">
-                    <p>Noch {{ stack.stackTraining.length }} Vokabel{{ stack.stackTraining.length == 1 ? '' : 'n' }}</p>
-                    <p>({{ (Math.round((progress_length - stack.stackTraining.length) / (progress_length) *
+                    <p>Noch {{ stack.stack_training.length }} Vokabel{{ stack.stack_training.length == 1 ? '' : 'n' }}</p>
+                    <p>({{ (Math.round((progress_length - stack.stack_training.length) / (progress_length) *
                         100) | 0)
                     }}%)</p>
                 </div>
                 <ion-progress-bar
-                    :value="(progress_length - stack.stackTraining.length) / (progress_length)"></ion-progress-bar>
+                    :value="(progress_length - stack.stack_training.length) / (progress_length)"></ion-progress-bar>
             </div>
         </ion-content>
     </ion-page>
@@ -68,6 +68,7 @@ import 'swiper/swiper.min.css';
 import { caretForwardOutline, exitOutline, refreshOutline, swapHorizontalOutline, thumbsDownOutline, thumbsUpOutline } from 'ionicons/icons';
 import Flags from '@/components/Flags.vue';
 import { Vocabulary } from '@/utils/Vocabulary';
+import languages from '@/utils/languages.json'
 
 const directions = ['left', 'right', ''];
 
@@ -83,7 +84,7 @@ export default defineComponent({
     methods: {
         turnCard() {
             this.cardTurned = !this.cardTurned;
-            this.language = this.language == this.stack.languageA ? this.stack.languageB : this.stack.languageA;
+            this.language = this.language == this.stack.lang_a ? this.stack.lang_b : this.stack.lang_a;
         },
         changeDirection() {
             this.direction = directions[(directions.indexOf(this.direction) + 1) % directions.length];
@@ -101,30 +102,46 @@ export default defineComponent({
                 this.stack = stack;
             });
         },
+        stackLanguages(stack: any) {
+            let l1 = stack.lang_a
+            let l2 = stack.lang_b
+
+            languages.find((language) => {
+                if (language.code === stack.lang_a) {
+                    l1 = language.language
+                }
+
+                if (language.code === stack.lang_b) {
+                    l2 = language.language
+                }
+            })
+
+            return [l1, l2]
+        },
         setLanguage() {
             if (this.direction == 'left') {
-                this.language = this.stack.languageB;
+                this.language = this.stack.lang_b;
             } else if (this.direction == 'right') {
-                this.language = this.stack.languageA;
+                this.language = this.stack.lang_a;
             } else {
-                this.language = Math.floor(Math.random() * 2) == 0 ? this.stack.languageA : this.stack.languageB;
+                this.language = Math.floor(Math.random() * 2) == 0 ? this.stack.lang_a : this.stack.lang_b;
             }
         },
 
         async nextVocabulary(vocabularyCorrect: boolean) {
             // hier api request mit richtig oder falsch mit current vocabulary
             if (vocabularyCorrect)
-                await this.stackService.successCardAnswer(this.stack.id, this.currentVocabulary.getId);
+                await this.stackService.successCardAnswer(this.stack._id, this.currentVocabulary.id);
             else
-                await this.stackService.failedCardAnswer(this.stack.id, this.currentVocabulary.getId);
+                await this.stackService.failedCardAnswer(this.stack._id, this.currentVocabulary.id);
 
-            this.stack.stackTraining.shift();
+            this.stack.stack_training.shift();
             // this.progress_length = this.stack.stackTraining.length;
             this.cardTurned = false;
             this.setLanguage();
 
-            if (this.stack.stackTraining.length > 0) {
-                this.currentVocabulary = this.stack.stackTraining[0];
+            if (this.stack.stack_training.length > 0) {
+                this.currentVocabulary = this.stack.stack_training[0];
             } else {
                 this.$router.push('/training');
             }
@@ -157,7 +174,7 @@ export default defineComponent({
                 if (data.role == 'cancel') return;
 
                 if (data.role == 'start') {
-                    await this.stackService.startTraining(this.stack.id, Number.parseInt(data.data.values[0]));
+                    await this.stackService.startTraining(this.stack._id, Number.parseInt(data.data.values[0]));
 
                     this.reset();
                 }
@@ -169,13 +186,13 @@ export default defineComponent({
         async reset() {
             await this.fetchData();
             setTimeout(() => {
-                this.progress_length = this.stack.stackTraining.length;
+                this.progress_length = this.stack.stack_training.length;
                 this.setLanguage();
 
-                if (this.stack.stackTraining.length > 0) {
-                    this.currentVocabulary = this.stack.stackTraining[0];
+                if (this.stack.stack_training.length > 0) {
+                    this.currentVocabulary = this.stack.stack_training[0];
                 } else {
-                    this.currentVocabulary = new Vocabulary(0, '', '', '') as Vocabulary;
+                    this.currentVocabulary = new Vocabulary('', '', '') as Vocabulary;
                 }
             }, 100)
         }
@@ -191,13 +208,13 @@ export default defineComponent({
             caretForwardOutline,
             direction: 'right',
             stackService,
-            stack: new Stack("0", 'placeholder', 'placeholder', [], [], [], []) as Stack,
+            stack: new Stack('placeholder', 'placeholder', [], [], [], []) as Stack,
             progress_length,
             thumbsDownOutline,
             thumbsUpOutline,
             cardTurned: false,
             language: 'placeholder',
-            currentVocabulary: new Vocabulary(0, '', '', '') as Vocabulary
+            currentVocabulary: new Vocabulary('', '', '') as Vocabulary
         }
     },
     mounted() {

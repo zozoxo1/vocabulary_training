@@ -7,9 +7,9 @@
     </ion-header>
     <ion-content>
       <swiper @slideChange="onSlideChange" :slides-per-view="1" :space-between="50">
-        <swiper-slide v-for="stack in stacks" :key="stack.id">
+        <swiper-slide v-for="stack in stacks" :key="stack._id">
           <VocabularySlide v-bind="vocabularySlideProps(stack)" @startTraining="startTraining"
-            @stopTraining="stopTraining" @deleteStackFunction="deleteStackFunction(stack.id)"
+            @stopTraining="stopTraining" @deleteStackFunction="deleteStackFunction(stack._id)"
             @openVocabularyListFunction="openVocabularyListModal">
           </VocabularySlide>
         </swiper-slide>
@@ -46,6 +46,7 @@ import { Swiper, SwiperSlide } from 'swiper/vue';
 import SlideDots from '@/components/SlideDots.vue';
 
 import 'swiper/swiper.min.css';
+import languages from '@/utils/languages.json'
 
 @Options({
   components: {
@@ -73,16 +74,37 @@ export default class VocabularyView extends Vue {
   public dataLoading: boolean = true;
   public swipeIndex = 0;
 
+  public getStackSize(stack: Stack) {
+    return stack.stack_checked.length + stack.stack_default.length + stack.stack_expanded.length + stack.stack_training.length;
+  }
+
   public vocabularySlideProps(stack: Stack) {
     return {
-      vocabularies: stack.stackSize,
-      srcFirstLanguage: `flags/${stack.languageA}.svg`,
-      srcSecondLanguage: `flags/${stack.languageB}.svg`,
-      nameFirstLanguage: stack.stackLanguages[0],
-      nameSecondLanguage: stack.stackLanguages[1],
+      vocabularies: this.getStackSize(stack),
+      srcFirstLanguage: `flags/${stack.lang_a}.svg`,
+      srcSecondLanguage: `flags/${stack.lang_b}.svg`,
+      nameFirstLanguage: this.stackLanguages(stack)[0],
+      nameSecondLanguage: this.stackLanguages(stack)[1],
       stack: stack,
       update: this.fetchStacks
     }
+  }
+
+  public stackLanguages(stack: Stack) {
+    let l1 = stack.lang_a
+    let l2 = stack.lang_b
+
+    languages.find((language) => {
+      if (language.code === stack.lang_a) {
+        l1 = language.language
+      }
+
+      if (language.code === stack.lang_b) {
+        l2 = language.language
+      }
+    })
+
+    return [l1, l2]
   }
 
   private async fetchStacks(): Promise<void> {
@@ -177,7 +199,7 @@ export default class VocabularyView extends Vue {
     modal.present();
   }
 
-  public async openVocabularyListModal(srcFirstLanguage: string, srcSecondLanguage: string, nameFirstLanguage: string, nameSecondLanguage: string, stack: string, update: any): Promise<void> {
+  public async openVocabularyListModal(srcFirstLanguage: string, srcSecondLanguage: string, nameFirstLanguage: string, nameSecondLanguage: string, stack: Stack, update: any): Promise<void> {
     const modal = await modalController.create({
       component: VocabularyListModal,
       componentProps: {

@@ -1,20 +1,20 @@
 <template>
     <ion-list>
-        <ion-item-sliding v-for="vocabulary in vocabularies" :key="vocabulary.getId">
+        <ion-item-sliding v-for="vocabulary in vocabularies" :key="vocabulary.id">
             <ion-item-options side="end">
-                <ion-item-option expandable color="danger" @click="() => { }">
+                <ion-item-option color="danger" @click="deleteVocabulary(vocabulary)">
                     <ion-icon :icon="trash"></ion-icon>
                     Löschen
                 </ion-item-option>
             </ion-item-options>
             <ion-item>
                 <div>
-                    <p>{{ stack.stackLanguages[0] }}</p>
-                    <h4>{{ vocabulary.getWord }}</h4>
-                    <p>{{ stack.stackLanguages[1] }}</p>
-                    <h4>{{ vocabulary.getTranslation }}</h4>
+                    <p>{{ stackLanguages(stack)[0] }}</p>
+                    <h4>{{ vocabulary.word }}</h4>
+                    <p>{{ stackLanguages(stack)[1] }}</p>
+                    <h4>{{ vocabulary.translation }}</h4>
                     <p>Beschreibung</p>
-                    <h4>{{ vocabulary.getDescription }}</h4>
+                    <h4>{{ vocabulary.description }}</h4>
                 </div>
             </ion-item>
         </ion-item-sliding>
@@ -30,6 +30,8 @@ import { Vocabulary } from "@/utils/Vocabulary";
 import { trash } from 'ionicons/icons';
 import { StackService } from "@/services/Stack.Service";
 import { container } from "tsyringe";
+import { Stack } from "@/utils/Stack";
+import languages from '@/utils/languages.json'
 
 const stackService: StackService = container.resolve(StackService);
 
@@ -46,17 +48,36 @@ export default defineComponent({
     ],
     methods: {
         async fetchData() {
-            await stackService.getStack(this.stack.id).then((data) => {
-                this.vocabularies.splice(0, this.vocabularies.length)
-                this.vocabularies.push(...data.stackDefault.concat(data.stackTraining, data.stackExpanded, data.stackChecked))
-            });
+            const fetchedStack = await stackService.getStack(this.stack._id);
+            this.vocabularies.splice(0, this.vocabularies.length)
+            this.vocabularies.push(...fetchedStack.stack_default.concat(fetchedStack.stack_training, fetchedStack.stack_expanded, fetchedStack.stack_checked))
+        },
+        async deleteVocabulary(vocabulary: Vocabulary) {
+            await stackService.removeVocabulary(vocabulary, this.stack._id)
+            this.vocabularies.splice(this.vocabularies.indexOf(vocabulary), 1)
+        },
+        stackLanguages(stack: Stack) {
+            let l1 = stack.lang_a
+            let l2 = stack.lang_b
+
+            languages.find((language) => {
+                if (language.code === stack.lang_a) {
+                    l1 = language.language
+                }
+
+                if (language.code === stack.lang_b) {
+                    l2 = language.language
+                }
+            })
+
+            return [l1, l2]
         }
     },
     watch: {
         async update() {
             // only god knows why this is working ~ Zoe Günther 2023
-            await setTimeout(() => {
-                this.fetchData();
+            await setTimeout(async () => {
+                await this.fetchData();
             }, 100)
         }
     },

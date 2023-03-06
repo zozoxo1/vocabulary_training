@@ -7,7 +7,7 @@
     </ion-header>
     <ion-content>
       <swiper @slideChange="onSlideChange" :slides-per-view="1" :space-between="50">
-        <swiper-slide v-for="stack in stacks" :key="stack.id">
+        <swiper-slide v-for="stack in stacks" :key="stack._id">
           <TrainingSlide v-bind="trainingSlideProps(stack)" @removeTraining="removeTraining"></TrainingSlide>
         </swiper-slide>
       </swiper>
@@ -42,6 +42,7 @@ import { Swiper, SwiperSlide } from 'swiper/vue';
 import SlideDots from '@/components/SlideDots.vue';
 
 import 'swiper/swiper.min.css';
+import languages from '@/utils/languages.json'
 
 @Options({
   components: {
@@ -82,12 +83,29 @@ export default class TrainingView extends Vue {
 
   public trainingSlideProps(stack: Stack) {
     return {
-      srcFirstLanguage: `flags/${stack.languageA}.svg`,
-      srcSecondLanguage: `flags/${stack.languageB}.svg`,
-      nameFirstLanguage: stack.stackLanguages[0],
-      nameSecondLanguage: stack.stackLanguages[1],
+      srcFirstLanguage: `flags/${stack.lang_a}.svg`,
+      srcSecondLanguage: `flags/${stack.lang_b}.svg`,
+      nameFirstLanguage: this.stackLanguages(stack)[0],
+      nameSecondLanguage: this.stackLanguages(stack)[1],
       stack: stack
     }
+  }
+
+  public stackLanguages(stack: Stack) {
+    let l1 = stack.lang_a
+    let l2 = stack.lang_b
+
+    languages.find((language) => {
+      if (language.code === stack.lang_a) {
+        l1 = language.language
+      }
+
+      if (language.code === stack.lang_b) {
+        l2 = language.language
+      }
+    })
+
+    return [l1, l2]
   }
 
   private async fetchTrainingStacks(): Promise<void> {

@@ -3,21 +3,6 @@ import { Vocabulary } from '@/utils/Vocabulary'
 import { singleton } from 'tsyringe'
 import Api from './Api.Service'
 
-class Person {
-	private geburtsdatum: Date = new Date()
-	private vorname: string = ' '
-	private nachname: string = ' '
-	constructor(
-		vorname: string,
-		nachname: string,
-		geburtsdatum: Date = new Date()
-	) {
-		this.vorname = vorname
-		this.nachname = nachname
-		this.geburtsdatum = geburtsdatum
-	}
-}
-
 @singleton()
 class StackService extends Api {
 	public async addStack(
@@ -81,14 +66,28 @@ class StackService extends Api {
 		return response
 	}
 
+	public async removeVocabulary(
+		vocabulary: Vocabulary,
+		stack_id: string
+	): Promise<Stack[]> {
+		const response = await this.delete<any>(
+			'/stack/' + stack_id + '/' + vocabulary.id
+		)
+
+		if (response === undefined) {
+			throw new Error('Communication error')
+		}
+		return response
+	}
+
 	public async addVocabulary(
 		vocabulary: Vocabulary,
 		stack_id: string
 	): Promise<Stack[]> {
 		const response = await this.post<any>('/card/' + stack_id, {
-			word: vocabulary.getWord,
-			translation: vocabulary.getTranslation,
-			description: vocabulary.getDescription,
+			word: vocabulary.word,
+			translation: vocabulary.translation,
+			description: vocabulary.description,
 		})
 
 		if (response === undefined) {
@@ -112,260 +111,46 @@ class StackService extends Api {
 	}
 
 	public async getStack(stack_id: string): Promise<Stack> {
-		const response = await this.get<any>('/stack/' + stack_id)
+		const response = await this.get<Stack>('/stack/' + stack_id)
 		if (response === undefined) {
 			throw new Error('Communication error')
 		}
 
-		const vocabularies_default: Vocabulary[] = new Array<Vocabulary>()
-		const vocabularies_training: Vocabulary[] = new Array<Vocabulary>()
-		const vocabularies_expanded: Vocabulary[] = new Array<Vocabulary>()
-		const vocabularies_checked: Vocabulary[] = new Array<Vocabulary>()
-
-		for (const vocab of response.StandartStapel) {
-			if (vocab !== null)
-				vocabularies_default.push(
-					new Vocabulary(
-						vocab.id,
-						vocab.word,
-						vocab.translation,
-						vocab.description
-					)
-				)
-		}
-
-		for (const vocab of response.Trainingsstapel) {
-			if (vocab !== null)
-				vocabularies_training.push(
-					new Vocabulary(
-						vocab.id,
-						vocab.word,
-						vocab.translation,
-						vocab.description
-					)
-				)
-		}
-
-		for (const vocab of response.ErweiterterStapel) {
-			if (vocab !== null)
-				vocabularies_expanded.push(
-					new Vocabulary(
-						vocab.id,
-						vocab.word,
-						vocab.translation,
-						vocab.description
-					)
-				)
-		}
-
-		for (const vocab of response.gepruefterStapel) {
-			if (vocab !== null)
-				vocabularies_checked.push(
-					new Vocabulary(
-						vocab.id,
-						vocab.word,
-						vocab.translation,
-						vocab.description
-					)
-				)
-		}
-
-		return new Stack(
-			response._id,
-			response.spracheA,
-			response.spracheB,
-			vocabularies_default,
-			vocabularies_training,
-			vocabularies_expanded,
-			vocabularies_checked
-		)
+		return response
 	}
 
 	public async getStacks(): Promise<Stack[]> {
-		const response = await this.get<any>('/stack')
+		const response = await this.get<Stack[]>('/stack')
 		if (response === undefined) {
 			throw new Error('Communication error')
 		}
 
-		const stacks: Stack[] = new Array<Stack>()
+		console.log(response)
 
-		for (const stack of response) {
-			const vocabularies_default: Vocabulary[] = new Array<Vocabulary>()
-			const vocabularies_training: Vocabulary[] = new Array<Vocabulary>()
-			const vocabularies_expanded: Vocabulary[] = new Array<Vocabulary>()
-			const vocabularies_checked: Vocabulary[] = new Array<Vocabulary>()
-
-			for (const vocab of stack.StandartStapel) {
-				if (vocab !== null)
-					vocabularies_default.push(
-						new Vocabulary(
-							vocab.id,
-							vocab.word,
-							vocab.translation,
-							vocab.description
-						)
-					)
-			}
-
-			for (const vocab of stack.Trainingsstapel) {
-				if (vocab !== null)
-					vocabularies_training.push(
-						new Vocabulary(
-							vocab.id,
-							vocab.word,
-							vocab.translation,
-							vocab.description
-						)
-					)
-			}
-
-			for (const vocab of stack.ErweiterterStapel) {
-				if (vocab !== null)
-					vocabularies_expanded.push(
-						new Vocabulary(
-							vocab.id,
-							vocab.word,
-							vocab.translation,
-							vocab.description
-						)
-					)
-			}
-
-			for (const vocab of stack.gepruefterStapel) {
-				if (vocab !== null)
-					vocabularies_checked.push(
-						new Vocabulary(
-							vocab.id,
-							vocab.word,
-							vocab.translation,
-							vocab.description
-						)
-					)
-			}
-
-			stacks.push(
-				new Stack(
-					stack._id,
-					stack.spracheA,
-					stack.spracheB,
-					vocabularies_default,
-					vocabularies_training,
-					vocabularies_expanded,
-					vocabularies_checked
-				)
-			)
-		}
-
-		return stacks
+		return response
 	}
 
 	public async getTrainingStacks(): Promise<Stack[]> {
-		const response = await this.get<any>('/stack')
+		const response = await this.get<Stack[]>('/stack')
 		if (response === undefined) {
 			throw new Error('Communication error')
 		}
-
 		const stacks: Stack[] = new Array<Stack>()
 
-		for (const stack of response) {
-			const vocabularies_default: Vocabulary[] = new Array<Vocabulary>()
-			const vocabularies_training: Vocabulary[] = new Array<Vocabulary>()
-			const vocabularies_expanded: Vocabulary[] = new Array<Vocabulary>()
-			const vocabularies_checked: Vocabulary[] = new Array<Vocabulary>()
-
-			for (const vocab of stack.StandartStapel) {
-				if (vocab !== null)
-					vocabularies_default.push(
-						new Vocabulary(
-							vocab.id,
-							vocab.word,
-							vocab.translation,
-							vocab.description
-						)
-					)
-			}
-
-			for (const vocab of stack.Trainingsstapel) {
-				if (vocab !== null)
-					vocabularies_training.push(
-						new Vocabulary(
-							vocab.id,
-							vocab.word,
-							vocab.translation,
-							vocab.description
-						)
-					)
-			}
-
-			for (const vocab of stack.ErweiterterStapel) {
-				if (vocab !== null)
-					vocabularies_expanded.push(
-						new Vocabulary(
-							vocab.id,
-							vocab.word,
-							vocab.translation,
-							vocab.description
-						)
-					)
-			}
-
-			for (const vocab of stack.gepruefterStapel) {
-				if (vocab !== null)
-					vocabularies_checked.push(
-						new Vocabulary(
-							vocab.id,
-							vocab.word,
-							vocab.translation,
-							vocab.description
-						)
-					)
-			}
-
+		for (const stack of response as Stack[]) {
 			if (
-				vocabularies_training.length > 0 ||
-				vocabularies_expanded.length > 0 ||
-				vocabularies_checked.length > 0
+				stack.stack_training.length > 0 ||
+				stack.stack_expanded.length > 0 ||
+				stack.stack_checked.length > 0
 			) {
-				stacks.push(
-					new Stack(
-						stack._id,
-						stack.spracheA,
-						stack.spracheB,
-						vocabularies_default,
-						vocabularies_training,
-						vocabularies_expanded,
-						vocabularies_checked
-					)
-				)
+				stacks.push(stack)
 			}
 		}
+
+		console.log(stacks)
 
 		return stacks
 	}
-
-	public async getPersonen(): Promise<Person[]> {
-		const response = await this.get<Person[]>('/personenListe')
-		if (response === undefined) {
-			throw new Error('Communication error')
-		}
-		return response
-	}
-
-	public async addPerson(): Promise<Person[]> {
-		const response = await this.post<Person[]>('/person')
-		if (response === undefined) {
-			throw new Error('Communication error')
-		}
-		return response
-	}
-
-	public async deletePerson(id: string): Promise<Person[]> {
-		const response = await this.delete<Person[]>('/person/' + id)
-		if (response === undefined) {
-			throw new Error('Communication error')
-		}
-		return response
-	}
 }
 
-export { Person, StackService }
+export { StackService }

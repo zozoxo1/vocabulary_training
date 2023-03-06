@@ -8,11 +8,11 @@
             <div class="actions">
                 <p>Vokabel{{ vocabularies == 1 ? '' : 'n' }} im Stack: <b>{{ vocabularies }}</b></p>
                 <div>
-                    <ion-button :disabled="stack.trainingBegan || stack.stackSize == 0" class="start-training"
-                        @click="$emit('startTraining', stack.id)">
+                    <ion-button :disabled="trainingBegan(stack) || getStackSize(stack) == 0" class="start-training"
+                        @click="$emit('startTraining', stack._id)">
                         <ion-icon :icon="playCircleOutline"></ion-icon>
                     </ion-button>
-                    <ion-button @click="$emit('stopTraining', stack.id)" :disabled="!stack.trainingBegan"
+                    <ion-button @click="$emit('stopTraining', stack._id)" :disabled="!trainingBegan(stack)"
                         class="stop-training">
                         <ion-icon :icon="closeCircleOutline"></ion-icon>
                     </ion-button>
@@ -32,12 +32,21 @@ import { defineComponent } from "vue";
 import ButtonRow from '@/components/ButtonRow.vue';
 import Flags from '@/components/Flags.vue';
 import { closeCircleOutline, playCircleOutline } from "ionicons/icons";
+import { Stack } from "@/utils/Stack";
 
 export default defineComponent({
     name: "VocabularySlide",
     components: {
         ButtonRow,
         Flags,
+    },
+    methods: {
+        getStackSize(stack: Stack) {
+            return stack.stack_checked.length + stack.stack_default.length + stack.stack_expanded.length + stack.stack_training.length;
+        },
+        trainingBegan(stack: Stack) {
+            return stack.stack_default.length < this.getStackSize(stack)
+        }
     },
     props: [
         'vocabularies',

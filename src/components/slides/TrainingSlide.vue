@@ -6,22 +6,22 @@
 
         <div class="content">
             <VocabularyProgressBar additionalClasses="" progressTitle="Restliche Vokabeln"
-                :progressText="`${stack.stackDefault.length + stack.stackTraining.length} Vokabel${stack.stackDefault.length + stack.stackTraining.length == 1 ? '' : 'n'} (${Math.round(((stack.stackDefault.length + stack.stackTraining.length) / stack.stackSize) * 100)}%)`"
-                :progressValue="(stack.stackDefault.length + stack.stackTraining.length) / stack.stackSize">
+                :progressText="`${stack.stack_default.length + stack.stack_training.length} Vokabel${stack.stack_default.length + stack.stack_training.length == 1 ? '' : 'n'} (${Math.round(((stack.stack_default.length + stack.stack_training.length) / getStackSize(stack)) * 100)}%)`"
+                :progressValue="(stack.stack_default.length + stack.stack_training.length) / getStackSize(stack)">
             </VocabularyProgressBar>
 
             <VocabularyProgressBar additionalClasses="" progressTitle="Trainingsfortschritt"
-                :progressText="`${stack.stackChecked.length} Vokabel${stack.stackChecked.length == 1 ? '' : 'n'} (${Math.round((stack.stackChecked.length / stack.stackSize) * 100)}%)`"
-                :progressValue="stack.stackChecked.length / stack.stackSize">
+                :progressText="`${stack.stack_checked.length} Vokabel${stack.stack_checked.length == 1 ? '' : 'n'} (${Math.round((stack.stack_checked.length / getStackSize(stack)) * 100)}%)`"
+                :progressValue="stack.stack_checked.length / getStackSize(stack)">
             </VocabularyProgressBar>
 
             <VocabularyProgressBar additionalClasses="progress_done" progressTitle="Richtig" progressText="Falsch"
-                :progressValue="((stack.stackExpanded.length + stack.stackChecked.length) - stack.stackExpanded.length) / (stack.stackExpanded.length + stack.stackChecked.length)">
+                :progressValue="((stack.stack_expanded.length + stack.stack_checked.length) - stack.stack_expanded.length) / (stack.stack_expanded.length + stack.stack_checked.length)">
             </VocabularyProgressBar>
 
-            <ButtonRow :show-delete="(stack.stackChecked.length / stack.stackSize) != 1"
-                @deleteEvent="$emit('removeTraining', stack.id)" deleteButtonText="Löschen" @continueEvent="startTraining"
-                :saveButtonText="(stack.stackChecked.length / stack.stackSize) == 1 ? 'Training beenden' : 'Fortsetzen'">
+            <ButtonRow :show-delete="(stack.stack_checked.length / getStackSize(stack)) != 1"
+                @deleteEvent="$emit('removeTraining', stack._id)" deleteButtonText="Löschen" @continueEvent="startTraining"
+                :saveButtonText="(stack.stack_checked.length / getStackSize(stack)) == 1 ? 'Training beenden' : 'Fortsetzen'">
             </ButtonRow>
         </div>
     </div>
@@ -33,6 +33,7 @@ import { defineComponent } from "vue";
 import ButtonRow from "../ButtonRow.vue";
 import VocabularyProgressBar from "../VocabularyProgressBar.vue";
 import Flags from "../Flags.vue";
+import { Stack } from "@/utils/Stack";
 
 export default defineComponent({
     name: "TrainingSlide",
@@ -51,12 +52,15 @@ export default defineComponent({
     ],
     methods: {
         startTraining() {
-            if ((this.stack.stackChecked.length / this.stack.stackSize) == 1) {
-                this.$emit('removeTraining', this.stack.id);
+            if ((this.stack.stack_checked.length / this.getStackSize(this.stack)) == 1) {
+                this.$emit('removeTraining', this.stack._id);
                 return;
             }
 
-            this.$router.push({ name: 'vocabulary-training', params: { id: this.stack.id } });
+            this.$router.push({ name: 'vocabulary-training', params: { id: this.stack._id } });
+        },
+        getStackSize(stack: Stack) {
+            return stack.stack_checked.length + stack.stack_default.length + stack.stack_expanded.length + stack.stack_training.length;
         }
     }
 });
