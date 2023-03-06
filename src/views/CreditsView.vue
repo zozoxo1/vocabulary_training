@@ -6,7 +6,13 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <div class="example-content">Hier stehen credits</div>
+      <div class="example-content">
+        <h1>Frontend:</h1>
+        <p>UI / UX: Zoe Günther (30161313)</p>
+        <p>Data integration: Alexander Widera (30163164)</p>
+        <h1>Backend:</h1>
+        <p>API: Fabian Waltermann (30168226)</p>
+      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -25,5 +31,6 @@ export default {
   align-items: center;
   justify-content: center;
   height: 100%;
+  flex-direction: column;
 }
 </style>
