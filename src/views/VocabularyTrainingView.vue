@@ -2,10 +2,10 @@
     <ion-page>
         <ion-header>
             <ion-toolbar class="head">
-                <ion-button @click="exit">
+                <ion-button class="small" @click="exit">
                     <ion-icon :icon="exitOutline"></ion-icon>
                 </ion-button>
-                <ion-button :disabled="cardTurned" @click="changeDirection">
+                <ion-button class="small" :disabled="cardTurned" @click="changeDirection">
                     <ion-icon :icon="swapHorizontalOutline"></ion-icon>
                 </ion-button>
             </ion-toolbar>
@@ -26,14 +26,16 @@
                 </div>
             </div>
             <div class="actions">
-                <ion-button v-if="cardTurned && stack.stackTraining.length > 0" @click="nextVocabulary(false)">
+                <ion-button class="small wrong" v-if="cardTurned && stack.stackTraining.length > 0"
+                    @click="nextVocabulary(false)">
                     <ion-icon :icon="thumbsDownOutline"></ion-icon>
                 </ion-button>
                 <ion-button v-if="stack.stackTraining.length > 0" class="turnCard" @click="turnCard">
                     <ion-icon :icon="refreshOutline"></ion-icon>
                     Umdrehen
                 </ion-button>
-                <ion-button v-if="cardTurned && stack.stackTraining.length > 0" @click="nextVocabulary(true)">
+                <ion-button class="small right" v-if="cardTurned && stack.stackTraining.length > 0"
+                    @click="nextVocabulary(true)">
                     <ion-icon :icon="thumbsUpOutline"></ion-icon>
                 </ion-button>
                 <ion-button @click="resetTraining" v-if="stack.stackTraining.length == 0">
@@ -194,7 +196,7 @@ export default defineComponent({
             thumbsDownOutline,
             thumbsUpOutline,
             cardTurned: false,
-            language: 'de',
+            language: 'placeholder',
             currentVocabulary: new Vocabulary(0, '', '', '') as Vocabulary
         }
     },
@@ -294,5 +296,39 @@ ion-toolbar {
 
 .head ion-button:first-child {
     margin-left: 1em;
+}
+
+.actions ion-button:nth-child(2) {
+    margin-inline: 2em;
+}
+
+ion-button {
+    --ripple-color: transparent;
+    --border-radius: 0.5em;
+    --padding-start: 1em;
+    --padding-end: 1em;
+    --padding-top: 0.5em;
+    --padding-bottom: 0.5em;
+    --border: none;
+    --box-shadow: none;
+    --color: var(--clr-white);
+    height: 2.8em;
+    letter-spacing: 0em;
+    text-transform: none;
+    font-size: 1em;
+}
+
+ion-button.small.wrong {
+    --background: var(--clr-red);
+    --background-activated: var(--clr-red-dark);
+    --background-focused: var(--clr-red-dark);
+    --background-hover: var(--clr-red-dark);
+}
+
+ion-button.small.right {
+    --background: var(--clr-green);
+    --background-activated: var(--clr-green-dark);
+    --background-focused: var(--clr-green-dark);
+    --background-hover: var(--clr-green-dark);
 }
 </style>

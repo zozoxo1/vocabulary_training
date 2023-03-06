@@ -6,7 +6,7 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <swiper :slides-per-view="1" :space-between="50">
+      <swiper @slideChange="onSlideChange" :slides-per-view="1" :space-between="50">
         <swiper-slide v-for="stack in stacks" :key="stack.id">
           <TrainingSlide v-bind="trainingSlideProps(stack)" @removeTraining="removeTraining"></TrainingSlide>
         </swiper-slide>
@@ -14,6 +14,8 @@
 
       <h1 class="no-training center" v-if="stacks.length == 0 && !dataLoading">Kein Training vorhanden</h1>
       <ion-spinner class="center" v-if="dataLoading"></ion-spinner>
+
+      <slide-dots :size="stacks.length" :selectedIndex="swipeIndex"></slide-dots>
     </ion-content>
   </ion-page>
 </template>
@@ -37,6 +39,7 @@ import { StackService } from '@/services/Stack.Service';
 import { container } from 'tsyringe';
 import TrainingSlide from '@/components/slides/TrainingSlide.vue';
 import { Swiper, SwiperSlide } from 'swiper/vue';
+import SlideDots from '@/components/SlideDots.vue';
 
 import 'swiper/swiper.min.css';
 
@@ -56,7 +59,8 @@ import 'swiper/swiper.min.css';
     TrainingSlide,
     Swiper,
     SwiperSlide,
-    IonSpinner
+    IonSpinner,
+    SlideDots
   },
 })
 
@@ -65,10 +69,15 @@ export default class TrainingView extends Vue {
   public stacks: Stack[] = new Array<Stack>();
   private stackService: StackService = container.resolve(StackService);
   public dataLoading: boolean = true;
+  public swipeIndex = 0;
 
   public async removeTraining(stack_id: string): Promise<void> {
     await this.stackService.resetTraining(stack_id);
     await this.fetchTrainingStacks();
+  }
+
+  public onSlideChange(swiper: any) {
+    this.swipeIndex = swiper.realIndex;
   }
 
   public trainingSlideProps(stack: Stack) {

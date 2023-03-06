@@ -8,7 +8,7 @@
         <flags :srcFirstLanguage="srcFirstLanguage" :srcSecondLanguage="srcSecondLanguage"
             :nameFirstLanguage="nameFirstLanguage" :nameSecondLanguage="nameSecondLanguage"></flags>
         <vocabulary-list ref="vocabList" :stack="stack" :update="updateList"></vocabulary-list>
-        <button-row @deleteEvent="closeModal" @continueEvent="presentAlert" deleteButtonText="Schließen"
+        <button-row @deleteEvent="closeModal" @continueEvent="presentAlert" deleteButtonText="close"
             saveButtonText="Hinzufügen"></button-row>
     </ion-content>
 </template>
@@ -96,7 +96,7 @@ export default defineComponent({
                 ],
             });
 
-            alert.onDidDismiss().then((data) => {
+            alert.onWillDismiss().then(async (data) => {
 
                 if (data.role === 'cancel') {
                     return;
@@ -107,6 +107,14 @@ export default defineComponent({
                 const description = data.data.values[2];
 
                 if (firstLanguage === '' || secondLanguage === '' || description === '') {
+                    const infoAlert = await alertController.create({
+                        header: 'Hinweis',
+                        subHeader: 'Vokabel konnte nicht hinzugefügt werden',
+                        message: 'Bitte achte darauf, alle Felder auszufüllen.',
+                        buttons: ['Alles klar!'],
+                    });
+
+                    await infoAlert.present();
                     return;
                 }
 
@@ -131,14 +139,26 @@ ion-content,
 ion-toolbar {
     --background: var(--clr-dark) !important;
     box-sizing: border-box;
-    color: var(--color-contrast);
-    --color: var(--color-contrast);
+    --color: var(--clr-white);
 }
 
 ion-content {
     height: 100%;
 }
 
+ion-title {
+    font-size: 2rem;
+    text-align: left;
+    padding: 0;
+    padding-left: 1em;
+    color: var(--clr-white);
+}
+
+ion-header,
+ion-toolbar {
+    height: 6em;
+    display: flex;
+}
 
 .buttons {
     padding-inline: 1em;

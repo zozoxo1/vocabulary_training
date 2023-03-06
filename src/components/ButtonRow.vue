@@ -1,7 +1,8 @@
 <template>
     <div class="buttons">
-        <ion-button class="btn-delete" v-if="showDelete == true || showDelete == undefined" @click="btnDelete">
-            <ion-icon :icon="trashOutline"></ion-icon>
+        <ion-button :class="`btn-delete ${deleteButtonText == 'close' ? 'close' : ''}`"
+            v-if="showDelete == true || showDelete == undefined" @click="btnDelete">
+            <ion-icon :icon="deleteButtonText == 'close' ? exitOutline : trashOutline"></ion-icon>
         </ion-button>
         <ion-button class="btn-continue" @click="$emit('continueEvent')">{{ saveButtonText }}</ion-button>
     </div>
@@ -12,7 +13,7 @@ import {
     alertController,
     IonButton
 } from "@ionic/vue";
-import { trashOutline } from "ionicons/icons";
+import { exitOutline, trashOutline } from "ionicons/icons";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -29,7 +30,8 @@ export default defineComponent({
     ],
     data() {
         return {
-            trashOutline
+            trashOutline,
+            exitOutline
         }
     },
     methods: {
@@ -83,7 +85,6 @@ export default defineComponent({
 .buttons ion-button {
     --ripple-color: transparent;
     --border-radius: 0.5em;
-    font-size: 1em;
     --padding-start: 1em;
     --padding-end: 1em;
     --padding-top: 0.5em;
@@ -94,6 +95,7 @@ export default defineComponent({
     height: 2.8em;
     letter-spacing: 0em;
     text-transform: none;
+    font-size: 1em;
 }
 
 .buttons .btn-delete {
@@ -101,6 +103,13 @@ export default defineComponent({
     --background-activated: var(--clr-red-dark);
     --background-focused: var(--clr-red-dark);
     --background-hover: var(--clr-red-dark);
+}
+
+.buttons .btn-delete.close {
+    --background: var(--clr-gray);
+    --background-activated: var(--clr-gray-dark);
+    --background-focused: var(--clr-gray-dark);
+    --background-hover: var(--clr-gray-dark);
 }
 
 .buttons .btn-continue {

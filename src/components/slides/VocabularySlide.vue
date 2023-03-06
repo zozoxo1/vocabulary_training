@@ -6,9 +6,9 @@
 
         <div class="content">
             <div class="actions">
-                <p>{{ vocabularies }} Vokabel{{ vocabularies == 1 ? '' : 'n' }} im Stack</p>
+                <p>Vokabel{{ vocabularies == 1 ? '' : 'n' }} im Stack: <b>{{ vocabularies }}</b></p>
                 <div>
-                    <ion-button :disabled="stack.trainingBegan" class="start-training"
+                    <ion-button :disabled="stack.trainingBegan || stack.stackSize == 0" class="start-training"
                         @click="$emit('startTraining', stack.id)">
                         <ion-icon :icon="playCircleOutline"></ion-icon>
                     </ion-button>
@@ -67,6 +67,22 @@ export default defineComponent({
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    margin-inline: 2em;
+    margin-inline: 1em;
+}
+
+.actions>div ion-button {
+    --ripple-color: transparent;
+    --border-radius: 0.5em;
+    --padding-start: 1em;
+    --padding-end: 1em;
+    --padding-top: 0.5em;
+    --padding-bottom: 0.5em;
+    --border: none;
+    --box-shadow: none;
+    --color: var(--clr-white);
+    height: 2.8em;
+    letter-spacing: 0em;
+    text-transform: none;
+    font-size: 1em;
 }
 </style>

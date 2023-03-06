@@ -6,8 +6,8 @@
         </div>
         <div>
             <p v-if="direction == '' || direction == undefined">&#8651;</p>
-            <p v-if="direction == 'left'">&#8647;</p>
-            <p v-if="direction == 'right'">&#8649;</p>
+            <p v-if="direction == 'left'">&#8592;</p>
+            <p v-if="direction == 'right'">&#8594;</p>
         </div>
         <div>
             <img class="flag" :src="require(`@/assets/${srcSecondLanguage}`)">

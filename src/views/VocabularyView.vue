@@ -6,7 +6,7 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <swiper :slides-per-view="1" :space-between="50">
+      <swiper @slideChange="onSlideChange" :slides-per-view="1" :space-between="50">
         <swiper-slide v-for="stack in stacks" :key="stack.id">
           <VocabularySlide v-bind="vocabularySlideProps(stack)" @startTraining="startTraining"
             @stopTraining="stopTraining" @deleteStackFunction="deleteStackFunction(stack.id)"
@@ -19,6 +19,8 @@
       <ion-spinner class="center" v-if="dataLoading"></ion-spinner>
 
       <AddButton @click="openStackAddModal"></AddButton>
+
+      <slide-dots :size="stacks.length" :selectedIndex="swipeIndex"></slide-dots>
     </ion-content>
   </ion-page>
 </template>
@@ -41,6 +43,7 @@ import { Stack } from '@/utils/Stack';
 import { StackService } from '@/services/Stack.Service';
 import { container } from 'tsyringe';
 import { Swiper, SwiperSlide } from 'swiper/vue';
+import SlideDots from '@/components/SlideDots.vue';
 
 import 'swiper/swiper.min.css';
 
@@ -58,7 +61,8 @@ import 'swiper/swiper.min.css';
     VocabularySlide,
     Swiper,
     SwiperSlide,
-    IonSpinner
+    IonSpinner,
+    SlideDots
   },
 })
 
@@ -67,6 +71,7 @@ export default class VocabularyView extends Vue {
   public stacks: Stack[] = new Array<Stack>();
   private stackService: StackService = container.resolve(StackService);
   public dataLoading: boolean = true;
+  public swipeIndex = 0;
 
   public vocabularySlideProps(stack: Stack) {
     return {
@@ -84,6 +89,10 @@ export default class VocabularyView extends Vue {
     this.dataLoading = true;
     this.stacks = await (await this.stackService.getStacks()).reverse();
     this.dataLoading = false;
+  }
+
+  public onSlideChange(swiper: any) {
+    this.swipeIndex = swiper.realIndex;
   }
 
   public async mounted(): Promise<void> {

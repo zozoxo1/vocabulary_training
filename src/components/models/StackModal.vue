@@ -36,9 +36,8 @@
             </ion-item>
         </ion-list>
 
-        <ion-button class="btn-continue"
-            @click="submit(current_first_language, current_second_language)">Hinzufügen</ion-button>
-        <ion-button class="btn-delete" @click="closeModal">Abbrechen</ion-button>
+        <button-row deleteButtonText="close" @deleteEvent="closeModal" saveButtonText="Hinzufügen"
+            @continueEvent="submit(current_first_language, current_second_language)"></button-row>
     </ion-content>
 </template>
   
@@ -59,6 +58,7 @@ import Flags from "../Flags.vue";
 import { alertController } from '@ionic/vue';
 import { StackService } from "@/services/Stack.Service";
 import { container } from "tsyringe";
+import ButtonRow from "../ButtonRow.vue";
 
 type languageObject = {
     code: string;
@@ -78,7 +78,8 @@ export default defineComponent({
         IonList,
         IonSelect,
         IonSelectOption,
-        Flags
+        Flags,
+        ButtonRow
     },
     methods: {
         getImgUrl(path: string): string {
@@ -169,48 +170,25 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
-ion-button {
-    width: 40%;
-    --ripple-color: transparent;
-}
-
-.btn-delete {
-    --background: none;
-    --border: none;
-    --box-shadow: none;
-    --background-activated: transparent;
-    position: absolute;
-    left: 50%;
-    translate: -50% 0;
-    bottom: 2em;
-}
-
-.btn-continue {
-    --background: green;
-    --border: none;
-    color: white;
-    --box-shadow: none;
-    --border-radius: 15px;
-    top: 2em;
-    position: relative;
-}
-
-.btn-continue.ion-activated,
-.btn-continue:focus {
-    --background-activated: rgb(1, 77, 1);
-}
-
-.btn-delete.ion-activated,
-.btn-delete:focus {
-    color: rgb(138, 62, 62);
-}
-
 ion-content,
 ion-toolbar {
     --background: var(--clr-dark) !important;
     box-sizing: border-box;
-    color: var(--color-contrast);
-    --color: var(--color-contrast);
+    --color: var(--clr-white);
+}
+
+ion-title {
+    font-size: 2rem;
+    text-align: left;
+    padding: 0;
+    padding-left: 1em;
+    color: var(--clr-white);
+}
+
+ion-header,
+ion-toolbar {
+    height: 6em;
+    display: flex;
 }
 
 ion-item,

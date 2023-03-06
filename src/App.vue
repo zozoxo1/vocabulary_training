@@ -43,6 +43,8 @@ export default defineComponent({
 
   --clr-toolbar: black;
   --clr-dark: rgb(32, 32, 32);
+  --clr-dark-light: rgb(44, 44, 44);
+  --clr-dark-light-2: rgb(143, 143, 143);
   --clr-red: red;
   --clr-red-dark: rgb(126, 0, 0);
   --clr-green: green;
@@ -75,5 +77,16 @@ ion-toolbar:last-of-type {
   flex-direction: column;
   flex-wrap: nowrap;
   position: relative;
+}
+
+ion-content {
+  // overwrite inline styles
+  --offset-bottom: 0px !important;
+  --overflow: hidden;
+  overflow: auto;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 </style>
