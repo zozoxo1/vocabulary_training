@@ -19,6 +19,7 @@ export default defineComponent({
 
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap');
 
 :root {
   --font: 'Open Sans', sans-serif;
