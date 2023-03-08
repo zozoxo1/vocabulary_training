@@ -12,7 +12,8 @@
         </swiper-slide>
       </swiper>
 
-      <h1 class="no-training center" v-if="stacks.length == 0 && !dataLoading">Kein Training vorhanden</h1>
+      <h1 class="no-training center" v-if="stacks.length == 0 && !dataLoading">Starte ein Training vom Vokabel Menü aus
+      </h1>
       <ion-spinner class="center" v-if="dataLoading"></ion-spinner>
 
       <slide-dots :size="stacks.length" :selectedIndex="swipeIndex"></slide-dots>
@@ -134,7 +135,8 @@ export default class TrainingView extends Vue {
 }
 
 .no-training {
-  color: var(--color-grey-1)
+  color: var(--color-grey-1);
+  width: 80%;
 }
 
 .swiper {
